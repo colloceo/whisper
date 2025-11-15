@@ -15,6 +15,51 @@
             </div>
         </div>
 
+        <!-- Daily Reminder Alert -->
+        @if(isset($showDailyReminder) && $showDailyReminder)
+        <div class="mb-4">
+            <div class="alert alert-info rounded-4 d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px; background: #0ea5e9;">
+                    <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    </svg>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-semibold mb-1">Daily Check-in Reminder</h6>
+                    <p class="small mb-0">Take a moment to check in with yourself today. How are you feeling?</p>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="btn btn-sm btn-outline-info rounded-circle p-1">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        @endif
+
+        <!-- Crisis Alert -->
+        @if(isset($showCrisisAlert) && $showCrisisAlert)
+        <div class="mb-4">
+            <div class="alert alert-warning rounded-4 d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 40px; height: 40px; background: #f59e0b;">
+                    <svg width="20" height="20" fill="white" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    </svg>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-semibold mb-1">We're here for you</h6>
+                    <p class="small mb-2">It's been a while since your last check-in. Remember, support is always available.</p>
+                    <a href="{{ route('crisis') }}" class="btn btn-sm btn-warning rounded-3">Get Support</a>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="btn btn-sm btn-outline-warning rounded-circle p-1">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        @endif
+
         <!-- Daily Affirmation Card -->
         <div class="mb-4">
             <div class="whisper-card p-4 text-center">

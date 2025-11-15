@@ -8,8 +8,8 @@ A comprehensive Laravel-based mental health and peer support application with AI
 - **Authentication**: Sign in/up with anonymous mode support
 - **Home Dashboard**: Interactive mood tracking with weekly charts and daily check-ins
 - **AI Journal**: Transform thoughts into positive insights using Groq AI (Llama3)
-- **Peer Support**: Real-time community chatrooms with persistent message storage
-- **Crisis Support**: Emergency resources and interactive coping strategies
+- **Peer Support**: Real-time community chatrooms with live message polling and persistent storage
+- **Crisis Support**: Kenyan emergency contacts and interactive coping strategies
 - **User Profile**: Settings with Bootstrap form controls and switches
 - **Database Integration**: Full CRUD operations for all user data
 - **Anonymous Support**: Complete functionality without registration required
@@ -109,7 +109,7 @@ A comprehensive Laravel-based mental health and peer support application with AI
 - `/home` - Dashboard with interactive mood tracking and weekly charts
 - `/journal` - AI journal with real-time insight generation
 - `/chatrooms` - Peer support with database-driven chat system
-- `/crisis` - Crisis support with interactive exercises
+- `/crisis` - Crisis support with Kenyan emergency contacts and interactive exercises
 - `/profile` - User profile with Bootstrap switches
 
 ### API Endpoints
@@ -119,8 +119,8 @@ A comprehensive Laravel-based mental health and peer support application with AI
 - `GET /api/affirmations/saved` - Retrieve saved insights
 - `DELETE /api/affirmation/{id}` - Delete insights
 - `POST /api/mood/save` - Save mood entries
-- `GET /api/chat/{groupName}/messages` - Load chat messages
-- `POST /api/chat/send` - Send chat messages
+- `GET /api/chat/{groupName}/messages` - Load chat messages (supports ?after= for polling)
+- `POST /api/chat/send` - Send chat messages with real-time updates
 
 ## Design System
 
@@ -156,15 +156,20 @@ A comprehensive Laravel-based mental health and peer support application with AI
 - **Anonymous Tracking**: Full functionality without user accounts
 
 ### Real-Time Community Support
+- **Live Chat System**: Messages appear instantly without page refresh (2-second polling)
 - **Persistent Chat**: Database-stored messages across sessions
 - **Multiple Support Groups**: Anxiety, Depression, and General Wellness
 - **Live Activity Feed**: Real-time community interactions
 - **Anonymous Participation**: Safe, judgment-free communication
+- **Auto-scroll**: Automatic scrolling to new messages
+- **Smart Loading**: Efficient polling that only fetches new messages
 
-### Privacy & Safety
+### Crisis Support & Safety
+- **Kenyan Emergency Contacts**: Real emergency hotlines (999, Befrienders Kenya +254 722 178 177, Child Helpline 116, GBV Centre 1195)
+- **Interactive Coping Tools**: 4-7-8 breathing exercises and 5-4-3-2-1 grounding techniques
+- **Professional Resources**: Links to Basic Needs Kenya and Mental Health Kenya organizations
 - **Anonymous Mode**: Complete functionality without registration
 - **Session-based Identity**: Secure user identification using Laravel sessions
-- **Crisis Resources**: Emergency support with interactive coping strategies
 - **Safe Space Guidelines**: Community standards with moderation features
 
 ## Bootstrap Customization
@@ -226,19 +231,22 @@ DB_CONNECTION=mysql
 ### Performance Features
 - **Lazy Loading**: Dynamic content loading for better performance
 - **Real-time Updates**: Instant UI changes without page refreshes
+- **Smart Message Polling**: Efficient 2-second polling that only fetches new messages
 - **Optimized Queries**: Efficient database operations with proper indexing
 - **Session Management**: Lightweight user identification system
 - **Asset Optimization**: Vite-powered build system for fast loading
+- **Memory Management**: Automatic cleanup of polling intervals when chat is closed
 
 ## Recent Updates
 
 ### Version 2.0 Features
 - **Groq AI Integration**: Replaced previous AI service with Groq's Llama3 model
-- **Real-time Chat System**: Database-persistent messaging across support groups
+- **Real-time Chat System**: Live message polling with instant updates (no page refresh)
 - **Enhanced Mood Tracking**: Weekly charts and comprehensive mood analytics
 - **Instant UI Updates**: No-refresh saving and loading of insights and reflections
 - **Community Activity Feed**: Live updates from user interactions
 - **Improved Anonymous Support**: Full feature access without registration
+- **Live Message Polling**: Messages appear automatically every 2 seconds
 
 ### Technical Improvements
 - **Database Architecture**: Comprehensive models for all user data

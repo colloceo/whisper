@@ -12,6 +12,7 @@ use App\Models\MoodEntry;
 use App\Models\SupportGroup;
 use App\Models\CommunityActivity;
 use App\Models\ChatMessage;
+use App\Models\UserSetting;
 
 class WhisperController extends Controller
 {
@@ -105,7 +106,33 @@ class WhisperController extends Controller
             $weekData[$dayName] = $dayMood ? $dayMood->intensity * 10 : 0;
         }
         
-        return view('home', compact('weekData', 'todayEntry'));
+        // Check for daily reminders
+        $showDailyReminder = Session::get('daily_reminders_enabled', true) && 
+                           !$todayEntry && 
+                           now()->hour >= 9 && now()->hour <= 21;
+        
+        // Check for crisis alerts (if user hasn't been active recently)
+        $lastActivity = collect([
+            JournalEntry::where(function($query) use ($userEmail, $userIdentifier) {
+                if ($userEmail) {
+                    $query->where('user_email', $userEmail);
+                } else {
+                    $query->where('user_email', $userIdentifier);
+                }
+            })->latest()->first(),
+            MoodEntry::where(function($query) use ($userEmail, $userIdentifier) {
+                if ($userEmail) {
+                    $query->where('user_email', $userEmail);
+                } else {
+                    $query->where('user_email', $userIdentifier);
+                }
+            })->latest()->first()
+        ])->filter()->sortByDesc('created_at')->first();
+        
+        $showCrisisAlert = Session::get('crisis_alerts_enabled', true) && 
+                          (!$lastActivity || $lastActivity->created_at->diffInDays(now()) > 3);
+        
+        return view('home', compact('weekData', 'todayEntry', 'showDailyReminder', 'showCrisisAlert'));
     }
 
     public function journal()
@@ -144,7 +171,91 @@ class WhisperController extends Controller
 
     public function profile()
     {
-        return view('profile');
+        $userEmail = Session::get('user_email');
+        $userIdentifier = $userEmail ?: Session::getId();
+        $isAnonymous = !$userEmail;
+        
+        // Get user statistics
+        $journalCount = JournalEntry::where(function($query) use ($userEmail, $userIdentifier) {
+                if ($userEmail) {
+                    $query->where('user_email', $userEmail);
+                } else {
+                    $query->where('user_email', $userIdentifier);
+                }
+            })->count();
+            
+        $affirmationCount = Affirmation::where(function($query) use ($userEmail, $userIdentifier) {
+                if ($userEmail) {
+                    $query->where('user_email', $userEmail);
+                } else {
+                    $query->where('user_email', $userIdentifier);
+                }
+            })->where('is_saved', true)->count();
+            
+        $moodCount = MoodEntry::where(function($query) use ($userEmail, $userIdentifier) {
+                if ($userEmail) {
+                    $query->where('user_email', $userEmail);
+                } else {
+                    $query->where('user_email', $userIdentifier);
+                }
+            })->count();
+            
+        // Calculate days active (days with any activity)
+        $journalDates = JournalEntry::where(function($query) use ($userEmail, $userIdentifier) {
+                if ($userEmail) {
+                    $query->where('user_email', $userEmail);
+                } else {
+                    $query->where('user_email', $userIdentifier);
+                }
+            })->selectRaw('DATE(created_at) as date')->distinct()->get()->pluck('date');
+            
+        $moodDates = MoodEntry::where(function($query) use ($userEmail, $userIdentifier) {
+                if ($userEmail) {
+                    $query->where('user_email', $userEmail);
+                } else {
+                    $query->where('user_email', $userIdentifier);
+                }
+            })->selectRaw('DATE(created_at) as date')->distinct()->get()->pluck('date');
+            
+        $affirmationDates = Affirmation::where(function($query) use ($userEmail, $userIdentifier) {
+                if ($userEmail) {
+                    $query->where('user_email', $userEmail);
+                } else {
+                    $query->where('user_email', $userIdentifier);
+                }
+            })->selectRaw('DATE(created_at) as date')->distinct()->get()->pluck('date');
+            
+        $daysActive = collect([$journalDates, $moodDates, $affirmationDates])->flatten()->unique()->count();
+        
+        $userName = $userEmail ? 'Whisperer' : 'Anonymous User';
+        $memberSince = $isAnonymous ? 'Current Session' : 'Nov 2025';
+        
+        // Get chat message count for this user
+        $chatCount = ChatMessage::where(function($query) use ($userEmail, $userIdentifier) {
+                if ($userEmail) {
+                    $query->where('user_email', $userEmail);
+                } else {
+                    $query->where('user_email', $userIdentifier);
+                }
+            })->count();
+            
+        // Get user settings
+        $settings = UserSetting::where('user_email', $userIdentifier)->first();
+        if (!$settings) {
+            $settings = UserSetting::create([
+                'user_email' => $userIdentifier,
+                'daily_reminders' => true,
+                'crisis_alerts' => true,
+                'anonymous_mode' => $isAnonymous
+            ]);
+        }
+            
+        // Set session variables for settings
+        Session::put('daily_reminders_enabled', $settings->daily_reminders);
+        Session::put('crisis_alerts_enabled', $settings->crisis_alerts);
+        Session::put('is_anonymous', $settings->anonymous_mode);
+        
+        return view('profile', compact('userName', 'memberSince', 'daysActive', 'journalCount', 'affirmationCount', 'moodCount', 'chatCount', 'isAnonymous', 'settings'));
     }
 
     public function saveJournalEntry(Request $request)
@@ -418,10 +529,17 @@ class WhisperController extends Controller
 
     public function getChatMessages(Request $request, $groupName)
     {
-        $messages = ChatMessage::where('support_group', $groupName)
-            ->orderBy('created_at', 'asc')
-            ->limit(50)
-            ->get();
+        $query = ChatMessage::where('support_group', $groupName)
+            ->orderBy('created_at', 'asc');
+        
+        // If 'after' parameter is provided, get only newer messages
+        if ($request->has('after')) {
+            $query->where('id', '>', $request->after);
+        } else {
+            $query->limit(50);
+        }
+        
+        $messages = $query->get();
         
         return response()->json([
             'success' => true,
@@ -461,6 +579,65 @@ class WhisperController extends Controller
             'success' => true,
             'message' => $chatMessage
         ]);
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $request->validate([
+            'setting' => 'required|string|in:daily_reminders,crisis_alerts,anonymous_mode',
+            'value' => 'required|boolean'
+        ]);
+        
+        $userEmail = Session::get('user_email');
+        $userIdentifier = $userEmail ?: Session::getId();
+        
+        $settings = UserSetting::where('user_email', $userIdentifier)->first();
+        if (!$settings) {
+            $settings = UserSetting::create(['user_email' => $userIdentifier]);
+        }
+        
+        $settings->update([$request->setting => $request->value]);
+        
+        // Handle anonymous mode toggle
+        if ($request->setting === 'anonymous_mode') {
+            Session::put('is_anonymous', $request->value);
+            if ($request->value) {
+                Session::forget('user_email');
+                Session::forget('username');
+            }
+        }
+        
+        // Handle daily reminders
+        if ($request->setting === 'daily_reminders') {
+            Session::put('daily_reminders_enabled', $request->value);
+        }
+        
+        // Handle crisis alerts
+        if ($request->setting === 'crisis_alerts') {
+            Session::put('crisis_alerts_enabled', $request->value);
+        }
+        
+        return response()->json(['success' => true, 'message' => 'Setting updated successfully']);
+    }
+
+    public function help()
+    {
+        return view('help');
+    }
+
+    public function privacy()
+    {
+        return view('privacy');
+    }
+
+    public function terms()
+    {
+        return view('terms');
+    }
+
+    public function contact()
+    {
+        return view('contact');
     }
 
     public function logout(Request $request)

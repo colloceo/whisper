@@ -126,6 +126,8 @@
 <script>
 let currentChatroom = null;
 let chatModal = null;
+let messagePolling = null;
+let lastMessageId = 0;
 
 const chatroomData = {
     anxietysupport: {
@@ -188,9 +190,13 @@ function joinChatroom(type) {
         if (data.success && data.messages.length > 0) {
             data.messages.forEach(msg => {
                 addMessageToChat(msg.user_name, msg.message, new Date(msg.created_at).toLocaleTimeString(), false);
+                lastMessageId = Math.max(lastMessageId, msg.id);
             });
         }
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Start polling for new messages
+        startMessagePolling();
     })
     .catch(error => {
         console.error('Error loading messages:', error);
@@ -223,7 +229,14 @@ function closeChatroom() {
         backdrop.remove();
     }
     
+    // Stop polling when closing chat
+    if (messagePolling) {
+        clearInterval(messagePolling);
+        messagePolling = null;
+    }
+    
     currentChatroom = null;
+    lastMessageId = 0;
 }
 
 function sendMessage() {
@@ -249,6 +262,7 @@ function sendMessage() {
     .then(data => {
         if (data.success) {
             addMessageToChat('You', message, 'Just now', true);
+            lastMessageId = Math.max(lastMessageId, data.message.id);
             input.value = '';
         }
         input.disabled = false;
@@ -274,6 +288,32 @@ function addMessageToChat(user, message, time, isOwn) {
     `;
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function startMessagePolling() {
+    if (messagePolling) {
+        clearInterval(messagePolling);
+    }
+    
+    messagePolling = setInterval(() => {
+        if (!currentChatroom) return;
+        
+        fetch(`/api/chat/${currentChatroom}/messages?after=${lastMessageId}`, {
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.messages.length > 0) {
+                data.messages.forEach(msg => {
+                    addMessageToChat(msg.user_name, msg.message, new Date(msg.created_at).toLocaleTimeString(), false);
+                    lastMessageId = Math.max(lastMessageId, msg.id);
+                });
+            }
+        })
+        .catch(error => console.error('Error polling messages:', error));
+    }, 2000); // Poll every 2 seconds
 }
 
 function handleKeyPress(event) {

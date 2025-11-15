@@ -14,6 +14,10 @@ Route::get('/journal', [WhisperController::class, 'journal'])->name('journal');
 Route::get('/chatrooms', [WhisperController::class, 'chatrooms'])->name('chatrooms');
 Route::get('/crisis', [WhisperController::class, 'crisis'])->name('crisis');
 Route::get('/profile', [WhisperController::class, 'profile'])->name('profile');
+Route::get('/help', [WhisperController::class, 'help'])->name('help');
+Route::get('/privacy', [WhisperController::class, 'privacy'])->name('privacy');
+Route::get('/terms', [WhisperController::class, 'terms'])->name('terms');
+Route::get('/contact', [WhisperController::class, 'contact'])->name('contact');
 
 // API routes for form submissions
 Route::post('/api/journal/save', [WhisperController::class, 'saveJournalEntry'])->name('api.journal.save');
@@ -26,4 +30,5 @@ Route::delete('/api/journal/{id}', [WhisperController::class, 'deleteJournalEntr
 Route::post('/api/mood/save', [WhisperController::class, 'saveMoodEntry'])->name('api.mood.save');
 Route::get('/api/chat/{groupName}/messages', [WhisperController::class, 'getChatMessages']);
 Route::post('/api/chat/send', [WhisperController::class, 'sendChatMessage']);
+Route::post('/api/settings/update', [WhisperController::class, 'updateSettings']);
 Route::post('/logout', [WhisperController::class, 'logout'])->name('logout');
