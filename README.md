@@ -6,7 +6,7 @@ A comprehensive Laravel-based mental health and peer support application with AI
 
 - **Onboarding Flow**: Welcome screens with crisis disclaimer modal
 - **Authentication**: Sign in/up with anonymous mode support
-- **Home Dashboard**: Interactive mood tracking with weekly charts and daily check-ins
+- **Home Dashboard**: Interactive mood tracking with weekly charts, daily check-ins, and AI-generated daily affirmations
 - **AI Journal**: Transform thoughts into positive insights using Groq AI (Llama3)
 - **Peer Support**: Real-time community chatrooms with live message polling and persistent storage
 - **Crisis Support**: Kenyan emergency contacts and interactive coping strategies
@@ -154,8 +154,9 @@ A comprehensive Laravel-based mental health and peer support application with AI
 ## Key Features
 
 ### AI-Powered Mental Health Support
-- **Groq AI Integration**: Uses Llama3-8B model for generating personalized insights
-- **Dynamic Prompts**: 8 different prompt styles with contextual guidance
+- **Groq AI Integration**: Uses Llama3-8B model for generating personalized insights and daily affirmations
+- **Daily Affirmations**: AI-generated encouraging messages that refresh each day with fallback system
+- **Dynamic Prompts**: 8 different prompt styles with contextual guidance for insights and affirmations
 - **Real-time Generation**: Instant AI responses with 3D flip card animations
 - **Insight Management**: Save, view, and delete AI-generated insights
 
@@ -250,6 +251,7 @@ DB_CONNECTION=mysql
 ## Recent Updates
 
 ### Version 2.1 Features
+- **Daily AI Affirmations**: Personalized encouraging messages generated fresh each day with intelligent caching
 - **Redesigned Profile Page**: Modern, clean interface with gradient backgrounds and icon integration
 - **Enhanced Support System**: Fully functional Help Center, Privacy Policy, Terms of Service, and Contact Support pages
 - **Grid-based Statistics**: Improved stats display with 2x2 grid layout and color-coded metrics

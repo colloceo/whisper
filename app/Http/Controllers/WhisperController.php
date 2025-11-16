@@ -132,7 +132,10 @@ class WhisperController extends Controller
         $showCrisisAlert = Session::get('crisis_alerts_enabled', true) && 
                           (!$lastActivity || $lastActivity->created_at->diffInDays(now()) > 3);
         
-        return view('home', compact('weekData', 'todayEntry', 'showDailyReminder', 'showCrisisAlert'));
+        // Get or generate daily affirmation
+        $dailyAffirmation = $this->getDailyAffirmation();
+        
+        return view('home', compact('weekData', 'todayEntry', 'showDailyReminder', 'showCrisisAlert', 'dailyAffirmation'));
     }
 
     public function journal()
@@ -644,5 +647,78 @@ class WhisperController extends Controller
     {
         Session::flush();
         return redirect()->route('onboarding');
+    }
+
+    private function getDailyAffirmation()
+    {
+        $today = now()->format('Y-m-d');
+        $cacheKey = 'daily_affirmation_' . $today;
+        
+        // Check if we already have today's affirmation in session
+        if (Session::has($cacheKey)) {
+            return Session::get($cacheKey);
+        }
+        
+        $affirmationPrompts = [
+            "Generate a gentle, encouraging daily affirmation about self-compassion and inner strength.",
+            "Create a positive affirmation about resilience and personal growth.",
+            "Write an uplifting message about self-worth and acceptance.",
+            "Generate an affirmation about finding peace and balance in daily life.",
+            "Create a supportive message about embracing challenges with courage.",
+            "Write an affirmation about the power of small steps and progress.",
+            "Generate a gentle reminder about being kind to oneself.",
+            "Create an affirmation about inner wisdom and trusting oneself."
+        ];
+        
+        $randomPrompt = $affirmationPrompts[array_rand($affirmationPrompts)] . " Keep it under 50 words and make it personal and meaningful.";
+        
+        try {
+            $response = Http::timeout(15)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . env('GROQ_API_KEY'),
+                    'Content-Type' => 'application/json'
+                ])
+                ->post('https://api.groq.com/openai/v1/chat/completions', [
+                    'model' => 'llama3-8b-8192',
+                    'messages' => [
+                        ['role' => 'user', 'content' => $randomPrompt]
+                    ],
+                    'max_tokens' => 100,
+                    'temperature' => 0.8
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $affirmation = trim($data['choices'][0]['message']['content'] ?? '');
+                $affirmation = preg_replace('/^["\']|["\']$/', '', $affirmation);
+            } else {
+                $affirmation = $this->getFallbackAffirmation();
+            }
+        } catch (\Exception $e) {
+            $affirmation = $this->getFallbackAffirmation();
+        }
+        
+        // Cache the affirmation for the day
+        Session::put($cacheKey, $affirmation);
+        
+        return $affirmation;
+    }
+    
+    private function getFallbackAffirmation()
+    {
+        $fallbacks = [
+            "You are doing your best, and that's more than enough. Be gentle with yourself today.",
+            "Your journey is unique and valuable. Trust in your ability to navigate whatever comes your way.",
+            "Every breath you take is a step toward healing and growth. You are stronger than you know.",
+            "Today is a new opportunity to show yourself the kindness you deserve.",
+            "Your feelings are valid, and you have the courage to work through them with compassion.",
+            "You carry within you everything you need to face today with grace and strength.",
+            "Progress isn't always visible, but every small step forward matters deeply.",
+            "You are worthy of love, peace, and all the good things life has to offer.",
+            "Your resilience has brought you this far, and it will continue to guide you forward.",
+            "Today, choose to be patient with yourself as you continue growing and healing."
+        ];
+        
+        return $fallbacks[array_rand($fallbacks)];
     }
 }

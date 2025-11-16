@@ -72,7 +72,7 @@
                 </div>
                 <h3 class="h6 text-dark fw-semibold mb-2">Today's Affirmation</h3>
                 <p class="text-muted fst-italic mb-0">
-                    "You are doing your best, and that's more than enough. Be gentle with yourself today."
+                    "{{ $dailyAffirmation }}"
                 </p>
             </div>
         </div>
