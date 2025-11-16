@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-vh-100" style="background: #fafbfc; padding-bottom: 100px;">
+<div class="min-vh-100" style="background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%); padding-bottom: 100px;">
     <div class="container mx-auto px-3 py-4" style="max-width: 480px;">
         <!-- Header -->
         <div class="d-flex align-items-center justify-content-between mb-5">
@@ -18,7 +18,7 @@
         </div>
 
         <!-- Emergency Alert -->
-        <div class="bg-white rounded-4 mb-4 p-4" style="box-shadow: 0 4px 20px rgba(220, 38, 38, 0.1); border: 1px solid #fecaca;">
+        <div class="rounded-4 mb-4 p-4" style="background: rgba(254, 242, 242, 0.8); box-shadow: 0 4px 20px rgba(220, 38, 38, 0.1); border: 1px solid #fecaca;">
             <div class="d-flex align-items-start gap-3">
                 <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 48px; height: 48px; background: #dc2626;">
                     <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
@@ -33,7 +33,7 @@
         </div>
 
         <!-- Crisis Hotlines -->
-        <div class="bg-white rounded-4 mb-4" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb;">
+        <div class="rounded-4 mb-4" style="background: rgba(240, 249, 255, 0.8); box-shadow: 0 4px 20px rgba(14, 165, 233, 0.08); border: 1px solid rgba(186, 230, 253, 0.3);">
             <div class="p-4">
                 <h3 class="h6 fw-bold text-dark mb-4">24/7 Crisis Hotlines - Kenya</h3>
                 
@@ -74,7 +74,7 @@
         </div>
 
         <!-- Coping Strategies -->
-        <div class="bg-white rounded-4 mb-4" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb;">
+        <div class="rounded-4 mb-4" style="background: rgba(240, 249, 255, 0.8); box-shadow: 0 4px 20px rgba(14, 165, 233, 0.08); border: 1px solid rgba(186, 230, 253, 0.3);">
             <div class="p-4">
                 <h3 class="h6 fw-bold text-dark mb-4">Immediate Coping Strategies</h3>
                 
@@ -125,7 +125,7 @@
         </div>
 
         <!-- Professional Resources -->
-        <div class="bg-white rounded-4" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb;">
+        <div class="rounded-4" style="background: rgba(240, 249, 255, 0.8); box-shadow: 0 4px 20px rgba(14, 165, 233, 0.08); border: 1px solid rgba(186, 230, 253, 0.3);">
             <div class="p-4">
                 <h3 class="h6 fw-bold text-dark mb-4">Professional Resources</h3>
                 

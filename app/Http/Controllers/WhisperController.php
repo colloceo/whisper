@@ -36,7 +36,7 @@ class WhisperController extends Controller
         // Simple authentication simulation
         Session::put('user_email', $request->email);
         Session::put('is_anonymous', false);
-        Session::put('username', 'Whisperer');
+        Session::put('username', $this->generateUsername());
 
         return redirect()->route('home');
     }
@@ -57,7 +57,7 @@ class WhisperController extends Controller
         // Simple registration simulation
         Session::put('user_email', $request->email);
         Session::put('is_anonymous', false);
-        Session::put('username', 'Whisperer');
+        Session::put('username', $this->generateUsername());
 
         return redirect()->route('home');
     }
@@ -65,6 +65,12 @@ class WhisperController extends Controller
     public function home()
     {
         $userEmail = Session::get('user_email');
+        
+        // Generate username for anonymous users if not set
+        if (!$userEmail && !Session::has('username')) {
+            Session::put('username', $this->generateUsername());
+            Session::put('is_anonymous', true);
+        }
         
         // For anonymous users, use session ID as identifier
         $userIdentifier = $userEmail ?: Session::getId();
@@ -230,7 +236,7 @@ class WhisperController extends Controller
             
         $daysActive = collect([$journalDates, $moodDates, $affirmationDates])->flatten()->unique()->count();
         
-        $userName = $userEmail ? 'Whisperer' : 'Anonymous User';
+        $userName = Session::get('username', $userEmail ? 'Whisperer' : 'Anonymous User');
         $memberSince = $isAnonymous ? 'Current Session' : 'Nov 2025';
         
         // Get chat message count for this user
@@ -288,33 +294,19 @@ class WhisperController extends Controller
         ]);
 
         try {
-            // Add more randomization and context-aware prompts
+            // Create more contextual and varied prompts
             $promptStyles = [
-                "Rewrite this as a gentle, encouraging affirmation: ",
-                "Transform this feeling into words of self-compassion: ",
-                "Create a supportive message for someone experiencing: ",
-                "Turn this into a healing, positive affirmation: ",
-                "Write an empowering response to help with: ",
-                "Generate a mindful, caring message about: ",
-                "Create a strength-based affirmation for: ",
-                "Transform this into words of hope and resilience: "
+                "Based on this journal entry: '{$request->content}' - Create a gentle, encouraging affirmation that acknowledges these feelings and offers hope.",
+                "Someone wrote: '{$request->content}' - Transform this into words of self-compassion and understanding.",
+                "For someone experiencing: '{$request->content}' - Write a supportive, healing message that validates their experience.",
+                "Turn this personal reflection: '{$request->content}' - Into an empowering affirmation about growth and resilience.",
+                "Respond to this journal entry: '{$request->content}' - With a mindful, caring message that offers perspective.",
+                "Based on these thoughts: '{$request->content}' - Create a strength-based affirmation that highlights inner wisdom.",
+                "Transform this feeling: '{$request->content}' - Into words of hope and encouragement for the healing journey.",
+                "For this personal share: '{$request->content}' - Write a compassionate response that emphasizes self-acceptance."
             ];
             
-            $contexts = [
-                " Focus on inner strength and growth.",
-                " Emphasize self-compassion and healing.",
-                " Highlight resilience and hope.",
-                " Focus on progress and small steps.",
-                " Emphasize acceptance and understanding.",
-                " Highlight personal power and choice.",
-                " Focus on connection and support.",
-                " Emphasize mindfulness and presence."
-            ];
-            
-            $randomPrompt = $promptStyles[array_rand($promptStyles)] . $request->content . $contexts[array_rand($contexts)] . " Keep it under 60 words and make it deeply personal.";
-            
-            // Add timestamp to ensure uniqueness
-            $uniquePrompt = $randomPrompt . " [" . time() . "]";
+            $randomPrompt = $promptStyles[array_rand($promptStyles)] . " Keep it under 50 words, personal, and avoid generic phrases. Make it specific to their experience. Add a unique timestamp: " . microtime(true);
             
             $response = Http::timeout(25)
                 ->withHeaders([
@@ -324,19 +316,25 @@ class WhisperController extends Controller
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
                     'model' => 'llama3-8b-8192',
                     'messages' => [
-                        ['role' => 'user', 'content' => $uniquePrompt]
+                        ['role' => 'user', 'content' => $randomPrompt]
                     ],
-                    'max_tokens' => 150,
-                    'temperature' => 0.7
+                    'max_tokens' => 120,
+                    'temperature' => 0.9
                 ]);
 
             if ($response->successful()) {
                 $data = $response->json();
-                $affirmationText = trim($data['choices'][0]['message']['content'] ?? 'Your feelings are valid, and you have the strength to navigate through this difficult time.');
-                // Clean up the response more thoroughly
+                $affirmationText = trim($data['choices'][0]['message']['content'] ?? '');
+                // Clean up the response thoroughly
                 $affirmationText = preg_replace('/^["\']|["\']$/', '', $affirmationText);
-                $affirmationText = preg_replace('/\[\d+\]/', '', $affirmationText); // Remove timestamp
+                $affirmationText = preg_replace('/\d+\.\d+/', '', $affirmationText); // Remove timestamp
+                $affirmationText = preg_replace('/\[.*?\]/', '', $affirmationText); // Remove any brackets
                 $affirmationText = trim($affirmationText);
+                
+                // Ensure we have a valid response
+                if (empty($affirmationText) || strlen($affirmationText) < 10) {
+                    $affirmationText = $this->getContextualFallback($request->content);
+                }
             } else {
                 $fallbacks = [
                     'Your resilience shines even in difficult moments, and you are capable of healing.',
@@ -350,22 +348,10 @@ class WhisperController extends Controller
                     'You are worthy of love, compassion, and understanding.',
                     'Your journey through this challenge is making you stronger.'
                 ];
-                $affirmationText = $fallbacks[array_rand($fallbacks)];
+                $affirmationText = $this->getContextualFallback($request->content);
             }
         } catch (\Exception $e) {
-            $fallbacks = [
-                'You are stronger than you know, and every step forward is progress worth celebrating.',
-                'Your feelings matter, and you deserve compassion and understanding, especially from yourself.',
-                'This challenging time is shaping you into someone even more resilient and wise.',
-                'You have survived difficult moments before, and you have the strength to navigate this too.',
-                'Your willingness to reflect and grow shows incredible courage and self-awareness.',
-                'Trust in your ability to navigate through this with grace and strength.',
-                'You are exactly where you need to be in your healing journey.',
-                'Your heart knows how to heal, give it time and compassion.',
-                'Every challenge you face is an opportunity for deeper self-understanding.',
-                'You carry within you everything you need to overcome this moment.'
-            ];
-            $affirmationText = $fallbacks[array_rand($fallbacks)];
+            $affirmationText = $this->getContextualFallback($request->content);
         }
 
         $userEmail = Session::get('user_email');
@@ -720,5 +706,88 @@ class WhisperController extends Controller
         ];
         
         return $fallbacks[array_rand($fallbacks)];
+    }
+    
+    private function generateUsername()
+    {
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders([
+                    'Authorization' => 'Bearer ' . env('GROQ_API_KEY'),
+                    'Content-Type' => 'application/json'
+                ])
+                ->post('https://api.groq.com/openai/v1/chat/completions', [
+                    'model' => 'llama3-8b-8192',
+                    'messages' => [
+                        ['role' => 'user', 'content' => 'Generate a single, unique, friendly username for a mental health app. Make it positive, calming, and appropriate. Examples: SerenitySeeker, CalmWanderer, PeacefulJourney. Return only the username, no quotes or explanation.']
+                    ],
+                    'max_tokens' => 20,
+                    'temperature' => 0.9
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $username = trim($data['choices'][0]['message']['content'] ?? '');
+                $username = preg_replace('/[^a-zA-Z0-9]/', '', $username);
+                if (strlen($username) > 3 && strlen($username) < 20) {
+                    return $username;
+                }
+            }
+        } catch (\Exception $e) {
+            // Fall through to fallback
+        }
+        
+        return $this->getFallbackUsername();
+    }
+    
+    private function getFallbackUsername()
+    {
+        $adjectives = ['Calm', 'Peaceful', 'Gentle', 'Serene', 'Bright', 'Kind', 'Wise', 'Strong', 'Brave', 'Hopeful'];
+        $nouns = ['Soul', 'Heart', 'Spirit', 'Journey', 'Path', 'Light', 'Star', 'Dream', 'Voice', 'Wings'];
+        $suffixes = ['Walker', 'Seeker', 'Finder', 'Keeper', 'Wanderer', 'Traveler', 'Guardian', 'Helper', 'Friend', 'Guide'];
+        
+        return $adjectives[array_rand($adjectives)] . $nouns[array_rand($nouns)] . $suffixes[array_rand($suffixes)];
+    }
+    
+    private function getContextualFallback($content)
+    {
+        $content = strtolower($content);
+        
+        // Context-aware fallbacks based on keywords
+        if (strpos($content, 'appetite') !== false || strpos($content, 'eating') !== false || strpos($content, 'food') !== false) {
+            $responses = [
+                'Your body is communicating with you. Listen with compassion and seek the nourishment you need, both physical and emotional.',
+                'Changes in appetite often reflect our inner state. Be gentle with yourself as you navigate this, and consider reaching out for support.',
+                'Your relationship with food and appetite can fluctuate. Trust that this is temporary and focus on small, caring acts of self-nourishment.'
+            ];
+        } elseif (strpos($content, 'tired') !== false || strpos($content, 'exhausted') !== false || strpos($content, 'sleep') !== false) {
+            $responses = [
+                'Rest is not a luxury, it is a necessity. Your body and mind are asking for what they need to heal and restore.',
+                'Feeling tired is your system asking for care. Honor this need and give yourself permission to rest without guilt.',
+                'Exhaustion often carries important messages. Listen to your body and prioritize the rest that will help you recover.'
+            ];
+        } elseif (strpos($content, 'anxious') !== false || strpos($content, 'worry') !== false || strpos($content, 'nervous') !== false) {
+            $responses = [
+                'Anxiety is your mind trying to protect you. Acknowledge it with kindness and remember that you have tools to find calm.',
+                'These worried thoughts are temporary visitors. You have the strength to observe them without being overwhelmed by them.',
+                'Your nervous system is responding to stress. Breathe deeply and remind yourself that you are safe in this moment.'
+            ];
+        } elseif (strpos($content, 'sad') !== false || strpos($content, 'down') !== false || strpos($content, 'depressed') !== false) {
+            $responses = [
+                'Sadness is a valid emotion that deserves acknowledgment. You are not broken; you are human, processing life with courage.',
+                'These heavy feelings will not last forever. You have weathered difficult emotions before and found your way through.',
+                'Your sadness speaks to your capacity for deep feeling. This sensitivity, while painful now, is also a source of strength.'
+            ];
+        } else {
+            $responses = [
+                'Your willingness to reflect and share shows incredible courage. You are taking important steps in your healing journey.',
+                'These thoughts and feelings are valid parts of your human experience. You deserve compassion as you work through them.',
+                'By expressing these feelings, you are already beginning to transform them. Trust in your ability to navigate this process.',
+                'Your inner wisdom is guiding you toward growth and healing. Be patient with yourself as you move through this experience.',
+                'Every moment of self-reflection is an act of self-care. You are investing in your wellbeing with courage and intention.'
+            ];
+        }
+        
+        return $responses[array_rand($responses)];
     }
 }

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-vh-100" style="padding-bottom: 100px;">
+<div class="min-vh-100" style="background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%); padding-bottom: 100px;">
     <div class="container-whisper mx-auto px-3 py-4" style="max-width: 500px;">
         <!-- Header with Greeting -->
         <div class="mb-4">

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-vh-100" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding-bottom: 100px;">
+<div class="min-vh-100" style="background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%); padding-bottom: 100px;">
     <div class="container mx-auto px-3 py-4" style="max-width: 480px;">
         <!-- Header -->
         <div class="text-center mb-5">
@@ -10,8 +10,8 @@
         </div>
 
         <!-- Profile Card -->
-        <div class="bg-white rounded-4 mb-4 p-4 position-relative overflow-hidden" style="box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.2);">
-            <div class="position-absolute top-0 end-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(178, 203, 242, 0.1) 0%, rgba(205, 180, 219, 0.1) 100%); z-index: 0;"></div>
+        <div class="rounded-4 mb-4 p-4 position-relative overflow-hidden" style="background: rgba(240, 249, 255, 0.8); box-shadow: 0 8px 32px rgba(14, 165, 233, 0.08); border: 1px solid rgba(186, 230, 253, 0.3);">
+            <div class="position-absolute top-0 end-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(125, 211, 252, 0.1) 0%, rgba(186, 230, 253, 0.1) 100%); z-index: 0;"></div>
             <div class="position-relative" style="z-index: 1;">
                 <div class="text-center mb-4">
                     <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);">
@@ -37,33 +37,33 @@
         <!-- Stats Grid -->
         <div class="row g-3 mb-4">
             <div class="col-6">
-                <div class="bg-white rounded-3 p-3 text-center h-100" style="box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
+                <div class="rounded-3 p-3 text-center h-100" style="background: rgba(240, 249, 255, 0.6); box-shadow: 0 4px 16px rgba(14, 165, 233, 0.06); border: 1px solid rgba(186, 230, 253, 0.2);">
                     <div class="h2 fw-bold mb-1" style="color: #0ea5e9;">{{ $daysActive }}</div>
                     <div class="small text-muted">Days Active</div>
                 </div>
             </div>
             <div class="col-6">
-                <div class="bg-white rounded-3 p-3 text-center h-100" style="box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
-                    <div class="h2 fw-bold mb-1" style="color: #f59e0b;">{{ $journalCount }}</div>
+                <div class="rounded-3 p-3 text-center h-100" style="background: rgba(240, 249, 255, 0.6); box-shadow: 0 4px 16px rgba(14, 165, 233, 0.06); border: 1px solid rgba(186, 230, 253, 0.2);">
+                    <div class="h2 fw-bold mb-1" style="color: #0284c7;">{{ $journalCount }}</div>
                     <div class="small text-muted">Journal Entries</div>
                 </div>
             </div>
             <div class="col-6">
-                <div class="bg-white rounded-3 p-3 text-center h-100" style="box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
-                    <div class="h2 fw-bold mb-1" style="color: #8b5cf6;">{{ $affirmationCount }}</div>
+                <div class="rounded-3 p-3 text-center h-100" style="background: rgba(240, 249, 255, 0.6); box-shadow: 0 4px 16px rgba(14, 165, 233, 0.06); border: 1px solid rgba(186, 230, 253, 0.2);">
+                    <div class="h2 fw-bold mb-1" style="color: #0369a1;">{{ $affirmationCount }}</div>
                     <div class="small text-muted">Saved Insights</div>
                 </div>
             </div>
             <div class="col-6">
-                <div class="bg-white rounded-3 p-3 text-center h-100" style="box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;">
-                    <div class="h2 fw-bold mb-1" style="color: #10b981;">{{ $moodCount }}</div>
+                <div class="rounded-3 p-3 text-center h-100" style="background: rgba(240, 249, 255, 0.6); box-shadow: 0 4px 16px rgba(14, 165, 233, 0.06); border: 1px solid rgba(186, 230, 253, 0.2);">
+                    <div class="h2 fw-bold mb-1" style="color: #0c4a6e;">{{ $moodCount }}</div>
                     <div class="small text-muted">Mood Check-ins</div>
                 </div>
             </div>
         </div>
 
         <!-- Settings -->
-        <div class="bg-white rounded-4 mb-4 p-4" style="box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.2);">
+        <div class="rounded-4 mb-4 p-4" style="background: rgba(240, 249, 255, 0.8); box-shadow: 0 8px 32px rgba(14, 165, 233, 0.08); border: 1px solid rgba(186, 230, 253, 0.3);">
             <h3 class="h6 fw-bold text-dark mb-4 d-flex align-items-center gap-2">
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97c0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1c0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
@@ -125,7 +125,7 @@
         </div>
 
         <!-- Support & Resources -->
-        <div class="bg-white rounded-4 mb-4 p-4" style="box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.2);">
+        <div class="rounded-4 mb-4 p-4" style="background: rgba(240, 249, 255, 0.8); box-shadow: 0 8px 32px rgba(14, 165, 233, 0.08); border: 1px solid rgba(186, 230, 253, 0.3);">
             <h3 class="h6 fw-bold text-dark mb-4 d-flex align-items-center gap-2">
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
