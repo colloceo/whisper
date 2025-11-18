@@ -134,7 +134,7 @@
                         <div class="fw-semibold">Basic Needs Kenya</div>
                         <small class="text-muted">Mental health support & advocacy</small>
                     </a>
-                    <a href="https://mentalhealthkenya.org" target="_blank" class="btn btn-outline-success rounded-3 p-3 text-start">
+                    <a href="https://mental.health.go.ke/" target="_blank" class="btn btn-outline-success rounded-3 p-3 text-start">
                         <div class="fw-semibold">Mental Health Kenya</div>
                         <small class="text-muted">Resources & professional help</small>
                     </a>
