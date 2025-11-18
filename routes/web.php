@@ -31,4 +31,7 @@ Route::post('/api/mood/save', [WhisperController::class, 'saveMoodEntry'])->name
 Route::get('/api/chat/{groupName}/messages', [WhisperController::class, 'getChatMessages']);
 Route::post('/api/chat/send', [WhisperController::class, 'sendChatMessage']);
 Route::post('/api/settings/update', [WhisperController::class, 'updateSettings']);
+Route::post('/api/mpesa/donate', [WhisperController::class, 'initiateMpesaDonation']);
+Route::get('/api/mpesa/status/{transactionId}', [WhisperController::class, 'checkPaymentStatus']);
+Route::post('/api/mpesa/webhook', [WhisperController::class, 'mpesaWebhook']);
 Route::post('/logout', [WhisperController::class, 'logout'])->name('logout');

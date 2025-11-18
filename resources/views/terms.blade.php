@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-vh-100" style="background: #fafbfc; padding-bottom: 100px;">
+<div class="min-vh-100" style="background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%); padding-bottom: 100px;">
     <div class="container mx-auto px-3 py-4" style="max-width: 480px;">
         <!-- Header -->
         <div class="d-flex align-items-center justify-content-between mb-5">
@@ -18,14 +18,14 @@
         </div>
 
         <!-- Terms Content -->
-        <div class="bg-white rounded-4 mb-4 p-4" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb;">
+        <div class="rounded-4 mb-4 p-4" style="background: rgba(240, 249, 255, 0.8); box-shadow: 0 8px 32px rgba(14, 165, 233, 0.08); border: 1px solid rgba(186, 230, 253, 0.3);">
             <h3 class="h6 fw-bold text-dark mb-3">Acceptance of Terms</h3>
-            <p class="text-muted mb-4">By using Whisper, you agree to these terms of service. If you don't agree, please don't use our platform.</p>
+            <p class="text-muted mb-4">By using Whispr, you agree to these terms of service. If you don't agree, please don't use our platform.</p>
         </div>
 
-        <div class="bg-white rounded-4 mb-4 p-4" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb;">
+        <div class="rounded-4 mb-4 p-4" style="background: rgba(240, 249, 255, 0.8); box-shadow: 0 8px 32px rgba(14, 165, 233, 0.08); border: 1px solid rgba(186, 230, 253, 0.3);">
             <h3 class="h6 fw-bold text-dark mb-3">Platform Purpose</h3>
-            <p class="text-muted mb-4">Whisper is a mental health support platform designed to:</p>
+            <p class="text-muted mb-4">Whispr is a mental health support platform designed to:</p>
             <ul class="text-muted mb-4">
                 <li>Provide a safe space for emotional expression</li>
                 <li>Connect users with peer support communities</li>
@@ -34,7 +34,7 @@
             </ul>
         </div>
 
-        <div class="bg-white rounded-4 mb-4 p-4" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb;">
+        <div class="rounded-4 mb-4 p-4" style="background: rgba(240, 249, 255, 0.8); box-shadow: 0 8px 32px rgba(14, 165, 233, 0.08); border: 1px solid rgba(186, 230, 253, 0.3);">
             <h3 class="h6 fw-bold text-dark mb-3">Community Guidelines</h3>
             <p class="text-muted mb-4">To maintain a safe and supportive environment:</p>
             <ul class="text-muted mb-4">
@@ -46,10 +46,10 @@
             </ul>
         </div>
 
-        <div class="bg-white rounded-4 mb-4 p-4" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb;">
+        <div class="rounded-4 mb-4 p-4" style="background: rgba(240, 249, 255, 0.8); box-shadow: 0 8px 32px rgba(14, 165, 233, 0.08); border: 1px solid rgba(186, 230, 253, 0.3);">
             <h3 class="h6 fw-bold text-dark mb-3">Medical Disclaimer</h3>
             <div class="alert alert-warning rounded-3 mb-4">
-                <strong>Important:</strong> Whisper is not a substitute for professional medical care or therapy.
+                <strong>Important:</strong> Whispr is not a substitute for professional medical care or therapy.
             </div>
             <ul class="text-muted mb-4">
                 <li>Our platform provides peer support, not medical advice</li>
@@ -59,7 +59,7 @@
             </ul>
         </div>
 
-        <div class="bg-white rounded-4 mb-4 p-4" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb;">
+        <div class="rounded-4 mb-4 p-4" style="background: rgba(240, 249, 255, 0.8); box-shadow: 0 8px 32px rgba(14, 165, 233, 0.08); border: 1px solid rgba(186, 230, 253, 0.3);">
             <h3 class="h6 fw-bold text-dark mb-3">User Responsibilities</h3>
             <p class="text-muted mb-4">As a user, you agree to:</p>
             <ul class="text-muted mb-4">
@@ -71,7 +71,7 @@
             </ul>
         </div>
 
-        <div class="bg-white rounded-4 p-4" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb;">
+        <div class="rounded-4 p-4" style="background: rgba(240, 249, 255, 0.8); box-shadow: 0 8px 32px rgba(14, 165, 233, 0.08); border: 1px solid rgba(186, 230, 253, 0.3);">
             <h3 class="h6 fw-bold text-dark mb-3">Questions?</h3>
             <p class="text-muted mb-3">Need clarification on our terms? Contact our support team.</p>
             <a href="{{ route('contact') }}" class="btn btn-primary rounded-3 w-100">Contact Support</a>

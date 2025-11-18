@@ -98,22 +98,25 @@
             </div>
             
             <!-- Chat Messages -->
-            <div class="modal-body" id="chat-messages" style="height: 400px; overflow-y: auto;">
+            <div class="modal-body p-3" id="chat-messages" style="height: 400px; overflow-y: auto; background: #f8fafc;">
                 <!-- Messages will be populated here -->
             </div>
             
             <!-- Chat Input -->
-            <div class="modal-footer border-top">
-                <div class="input-group">
-                    <input 
-                        type="text" 
-                        id="message-input"
-                        class="form-control rounded-start-pill"
-                        placeholder="Type your message..."
-                        onkeypress="handleKeyPress(event)"
-                    >
-                    <button onclick="sendMessage()" class="btn btn-whisper-blue rounded-end-pill">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="modal-footer border-top bg-white p-3">
+                <div class="d-flex align-items-center gap-2 w-100">
+                    <div class="flex-grow-1">
+                        <input 
+                            type="text" 
+                            id="message-input"
+                            class="form-control border-0 rounded-pill px-3 py-2"
+                            style="background: #f1f5f9; font-size: 0.9rem;"
+                            placeholder="Type your message..."
+                            onkeypress="handleKeyPress(event)"
+                        >
+                    </div>
+                    <button onclick="sendMessage()" class="btn rounded-circle p-2" style="background: #0ea5e9; color: white; width: 40px; height: 40px;">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                         </svg>
                     </button>
@@ -189,7 +192,10 @@ function joinChatroom(type) {
         messagesContainer.innerHTML = '';
         if (data.success && data.messages.length > 0) {
             data.messages.forEach(msg => {
-                addMessageToChat(msg.user_name, msg.message, new Date(msg.created_at).toLocaleTimeString(), false);
+                const currentUserEmail = '{{ Session::get("user_email") ?: Session::getId() }}';
+                const currentUserName = '{{ Session::get("username", "Anonymous") }}';
+                const isOwn = msg.user_email === currentUserEmail || msg.user_name === currentUserName;
+                addMessageToChat(msg.user_name, msg.message, new Date(msg.created_at).toLocaleTimeString(), isOwn);
                 lastMessageId = Math.max(lastMessageId, msg.id);
             });
         }
@@ -276,14 +282,20 @@ function sendMessage() {
 function addMessageToChat(user, message, time, isOwn) {
     const messagesContainer = document.getElementById('chat-messages');
     const messageDiv = document.createElement('div');
-    messageDiv.className = `d-flex mb-3 ${isOwn ? 'justify-content-end' : 'justify-content-start'}`;
+    messageDiv.className = `d-flex mb-2 ${isOwn ? 'justify-content-end' : 'justify-content-start'}`;
+    
+    const messageStyle = isOwn 
+        ? 'background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; border-radius: 18px 18px 4px 18px;'
+        : 'background: #f1f5f9; color: #1e293b; border-radius: 18px 18px 18px 4px;';
+    
     messageDiv.innerHTML = `
-        <div class="card border-0 ${isOwn ? 'bg-whisper-blue text-white' : 'bg-light'}" style="max-width: 75%;">
-            <div class="card-body p-3">
-                ${!isOwn ? `<h6 class="card-subtitle mb-1 small fw-medium">${user}</h6>` : ''}
-                <p class="card-text small mb-1">${message}</p>
-                <small class="${isOwn ? 'text-white-50' : 'text-muted'}">${time}</small>
+        <div class="position-relative" style="max-width: 75%;">
+            <div class="px-3 py-2 shadow-sm" style="${messageStyle}">
+                ${!isOwn ? `<div class="fw-semibold mb-1" style="font-size: 0.75rem; opacity: 0.8;">${user}</div>` : ''}
+                <div class="mb-1" style="font-size: 0.9rem; line-height: 1.4;">${message}</div>
+                <div class="text-end" style="font-size: 0.7rem; opacity: 0.7; margin-top: 2px;">${time}</div>
             </div>
+            ${isOwn ? '<div class="position-absolute" style="bottom: 2px; right: -8px; width: 0; height: 0; border-left: 8px solid #0284c7; border-top: 8px solid transparent;"></div>' : '<div class="position-absolute" style="bottom: 2px; left: -8px; width: 0; height: 0; border-right: 8px solid #f1f5f9; border-top: 8px solid transparent;"></div>'}
         </div>
     `;
     messagesContainer.appendChild(messageDiv);
@@ -307,7 +319,10 @@ function startMessagePolling() {
         .then(data => {
             if (data.success && data.messages.length > 0) {
                 data.messages.forEach(msg => {
-                    addMessageToChat(msg.user_name, msg.message, new Date(msg.created_at).toLocaleTimeString(), false);
+                    const currentUserEmail = '{{ Session::get("user_email") ?: Session::getId() }}';
+                    const currentUserName = '{{ Session::get("username", "Anonymous") }}';
+                    const isOwn = msg.user_email === currentUserEmail || msg.user_name === currentUserName;
+                    addMessageToChat(msg.user_name, msg.message, new Date(msg.created_at).toLocaleTimeString(), isOwn);
                     lastMessageId = Math.max(lastMessageId, msg.id);
                 });
             }

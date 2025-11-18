@@ -2,11 +2,11 @@
 
 @section('content')
 <div class="min-vh-100" style="background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%); padding-bottom: 100px;">
-    <div class="container-whisper mx-auto px-3 py-4" style="max-width: 500px;">
+    <div class="container-whispr mx-auto px-3 py-4" style="max-width: 500px;">
         <!-- Header with Greeting -->
         <div class="mb-4">
             <div class="text-center py-3">
-                <h1 class="h2 fw-bold text-dark mb-2">Hello, {{ session('username', 'Whisperer') }} 
+                <h1 class="h2 fw-bold text-dark mb-2">Hello, {{ session('username', 'Whispr User') }} 
                     <svg width="24" height="24" fill="#f59e0b" viewBox="0 0 24 24" class="d-inline">
                         <path d="M7 24h2v-2H7v2zm4 0h2v-2h-2v2zm4 0h2v-2h-2v2zM16 .01L15.99 0H10v1.01L10.01 1v6.5L5.5 12H2v4h3.5l4.51 4.5v6.5H16V.01z"/>
                     </svg>
@@ -62,9 +62,9 @@
 
         <!-- Daily Affirmation Card -->
         <div class="mb-4">
-            <div class="whisper-card p-4 text-center">
+            <div class="whispr-card p-4 text-center">
                 <div class="mb-3">
-                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-whisper-blue" style="width: 56px; height: 56px;">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 56px; height: 56px; background: #0ea5e9;">
                         <svg width="28" height="28" fill="white" viewBox="0 0 24 24">
                             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                         </svg>
@@ -79,7 +79,7 @@
 
         <!-- Mood Check-In -->
         <div class="mb-4">
-            <div class="whisper-card p-4">
+            <div class="whispr-card p-4">
                 <h3 class="h6 text-dark fw-semibold mb-3 text-center">Quick Check-In</h3>
                 @if($todayEntry)
                     <div class="alert alert-success rounded-4 mb-3 text-center">
@@ -149,10 +149,10 @@
 
         <!-- Weekly Mood Trend -->
         <div class="mb-4">
-            <div class="whisper-card p-4">
+            <div class="whispr-card p-4">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h3 class="h6 text-dark fw-semibold mb-0">Your week at a glance</h3>
-                    <svg width="16" height="16" fill="currentColor" class="text-whisper-blue" viewBox="0 0 24 24">
+                    <svg width="16" height="16" fill="currentColor" style="color: #0ea5e9;" viewBox="0 0 24 24">
                         <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
                     </svg>
                 </div>
@@ -160,7 +160,7 @@
                     @foreach($weekData as $day => $height)
                     <div class="d-flex flex-column align-items-center gap-2 flex-grow-1">
                         <div class="w-100 bg-light rounded-pill overflow-hidden d-flex align-items-end" style="height: 60px;">
-                            <div class="w-100 rounded-pill bg-whisper-blue" style="height: {{ max($height, 5) }}%;"></div>
+                            <div class="w-100 rounded-pill" style="height: {{ max($height, 5) }}%; background: #0ea5e9;"></div>
                         </div>
                         <span class="small text-muted fw-medium">{{ $day }}</span>
                     </div>
@@ -176,9 +176,9 @@
             <div class="row g-3">
                 <div class="col-6">
                     <a href="{{ route('journal') }}" class="text-decoration-none">
-                        <div class="whisper-card p-3 text-center h-100">
+                        <div class="whispr-card p-3 text-center h-100">
                             <div class="mb-2">
-                                <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-whisper-blue" style="width: 48px; height: 48px;">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-3" style="width: 48px; height: 48px; background: #0ea5e9;">
                                     <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
                                         <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
                                     </svg>
@@ -192,9 +192,9 @@
                 
                 <div class="col-6">
                     <a href="{{ route('chatrooms') }}" class="text-decoration-none">
-                        <div class="whisper-card p-3 text-center h-100">
+                        <div class="whispr-card p-3 text-center h-100">
                             <div class="mb-2">
-                                <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-whisper-warm" style="width: 48px; height: 48px;">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-3" style="width: 48px; height: 48px; background: #0284c7;">
                                     <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
                                         <path d="M12,3C6.5,3 2,6.58 2,11A7.18,7.18 0 0,0 2.64,14.25L1,22L8.75,20.36C9.81,20.75 10.87,21 12,21C17.5,21 22,17.42 22,13C22,8.58 17.5,5 12,5M12,3Z"/>
                                     </svg>

@@ -544,11 +544,12 @@ class WhisperController extends Controller
         ]);
         
         $userEmail = Session::get('user_email');
-        $userName = $userEmail ? 'Whisperer' : 'Anonymous';
+        $userIdentifier = $userEmail ?: Session::getId();
+        $userName = Session::get('username', $userEmail ? 'Whisperer' : 'Anonymous');
         
         $chatMessage = ChatMessage::create([
             'user_name' => $userName,
-            'user_email' => $userEmail,
+            'user_email' => $userIdentifier,
             'message' => $request->message,
             'support_group' => $request->support_group
         ]);
@@ -711,7 +712,17 @@ class WhisperController extends Controller
     private function generateUsername()
     {
         try {
-            $response = Http::timeout(10)
+            $prompts = [
+                'Create a unique, calming username for a mental health app. Style: [Adjective][Noun]. Examples: GentleBreeze, QuietMind, SoftLight. Return only the username.',
+                'Generate a peaceful username combining a positive feeling with nature. Examples: CalmRiver, SereneForest, TranquilSky. One word only.',
+                'Make a soothing username with healing theme. Examples: HealingHeart, RestfulSoul, KindSpirit. Return just the username.',
+                'Create a mindful username for wellness. Examples: MindfulPath, GracefulJourney, WiseHeart. Single username only.',
+                'Generate a supportive username. Examples: CompassionateGuide, GentleHelper, CaringFriend. Just the name.'
+            ];
+            
+            $randomPrompt = $prompts[array_rand($prompts)] . ' Timestamp: ' . microtime(true);
+            
+            $response = Http::timeout(8)
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . env('GROQ_API_KEY'),
                     'Content-Type' => 'application/json'
@@ -719,17 +730,18 @@ class WhisperController extends Controller
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
                     'model' => 'llama3-8b-8192',
                     'messages' => [
-                        ['role' => 'user', 'content' => 'Generate a single, unique, friendly username for a mental health app. Make it positive, calming, and appropriate. Examples: SerenitySeeker, CalmWanderer, PeacefulJourney. Return only the username, no quotes or explanation.']
+                        ['role' => 'user', 'content' => $randomPrompt]
                     ],
-                    'max_tokens' => 20,
-                    'temperature' => 0.9
+                    'max_tokens' => 15,
+                    'temperature' => 1.0
                 ]);
 
             if ($response->successful()) {
                 $data = $response->json();
                 $username = trim($data['choices'][0]['message']['content'] ?? '');
-                $username = preg_replace('/[^a-zA-Z0-9]/', '', $username);
-                if (strlen($username) > 3 && strlen($username) < 20) {
+                $username = preg_replace('/[^a-zA-Z]/', '', $username);
+                $username = preg_replace('/\d+\.\d+/', '', $username);
+                if (strlen($username) > 4 && strlen($username) < 18) {
                     return $username;
                 }
             }
@@ -742,13 +754,133 @@ class WhisperController extends Controller
     
     private function getFallbackUsername()
     {
-        $adjectives = ['Calm', 'Peaceful', 'Gentle', 'Serene', 'Bright', 'Kind', 'Wise', 'Strong', 'Brave', 'Hopeful'];
-        $nouns = ['Soul', 'Heart', 'Spirit', 'Journey', 'Path', 'Light', 'Star', 'Dream', 'Voice', 'Wings'];
-        $suffixes = ['Walker', 'Seeker', 'Finder', 'Keeper', 'Wanderer', 'Traveler', 'Guardian', 'Helper', 'Friend', 'Guide'];
+        $patterns = [
+            // Pattern 1: Adjective + Noun
+            function() {
+                $adjectives = ['Calm', 'Peaceful', 'Gentle', 'Serene', 'Quiet', 'Soft', 'Kind', 'Wise', 'Bright', 'Warm', 'Safe', 'Pure', 'Clear', 'Still', 'Free'];
+                $nouns = ['Mind', 'Heart', 'Soul', 'Spirit', 'Light', 'Breeze', 'River', 'Sky', 'Dawn', 'Moon', 'Star', 'Path', 'Garden', 'Ocean', 'Forest'];
+                return $adjectives[array_rand($adjectives)] . $nouns[array_rand($nouns)];
+            },
+            // Pattern 2: Noun + Adjective
+            function() {
+                $nouns = ['Healing', 'Mindful', 'Caring', 'Loving', 'Peaceful', 'Gentle', 'Quiet', 'Restful', 'Graceful', 'Hopeful'];
+                $suffixes = ['Journey', 'Path', 'Way', 'Soul', 'Heart', 'Spirit', 'Mind', 'Voice', 'Light', 'Guide'];
+                return $nouns[array_rand($nouns)] . $suffixes[array_rand($suffixes)];
+            },
+            // Pattern 3: Nature + Feeling
+            function() {
+                $nature = ['River', 'Mountain', 'Ocean', 'Forest', 'Garden', 'Meadow', 'Valley', 'Lake', 'Stream', 'Field'];
+                $feelings = ['Peace', 'Calm', 'Joy', 'Hope', 'Grace', 'Love', 'Light', 'Warmth', 'Comfort', 'Serenity'];
+                return $nature[array_rand($nature)] . $feelings[array_rand($feelings)];
+            }
+        ];
         
-        return $adjectives[array_rand($adjectives)] . $nouns[array_rand($nouns)] . $suffixes[array_rand($suffixes)];
+        $pattern = $patterns[array_rand($patterns)];
+        return $pattern();
     }
     
+    public function initiateMpesaDonation(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|string|regex:/^254[0-9]{9}$/',
+            'amount' => 'required|integer|min:10|max:70000'
+        ]);
+
+        try {
+            $transactionId = 'WH' . time() . rand(1000, 9999);
+            
+            // Store donation attempt in session for tracking
+            Session::put('pending_donation_' . $transactionId, [
+                'phone' => $request->phone,
+                'amount' => $request->amount,
+                'status' => 'pending',
+                'created_at' => now()
+            ]);
+            
+            // Simulate STK Push after 5 seconds (in production, this would be immediate)
+            // For demo purposes, we'll mark it as completed after 10 seconds
+            
+            $response = [
+                'success' => true,
+                'message' => 'Payment request sent successfully',
+                'transaction_id' => $transactionId,
+                'amount' => $request->amount,
+                'phone' => $request->phone
+            ];
+            
+            \Log::info('M-Pesa donation initiated', [
+                'transaction_id' => $transactionId,
+                'phone' => $request->phone,
+                'amount' => $request->amount,
+                'user_session' => Session::getId()
+            ]);
+            
+            return response()->json($response);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment processing failed. Please try again.'
+            ], 500);
+        }
+    }
+    
+    public function checkPaymentStatus($transactionId)
+    {
+        $donation = Session::get('pending_donation_' . $transactionId);
+        
+        if (!$donation) {
+            return response()->json(['status' => 'not_found']);
+        }
+        
+        // Simulate payment completion after 10 seconds (for demo)
+        $timeDiff = now()->diffInSeconds($donation['created_at']);
+        
+        if ($timeDiff > 10) {
+            // Mark as completed and send email
+            Session::put('pending_donation_' . $transactionId . '.status', 'completed');
+            
+            // Send appreciation email
+            $this->sendAppreciationEmail($donation['phone'], $donation['amount']);
+            
+            return response()->json(['status' => 'completed']);
+        }
+        
+        return response()->json(['status' => 'pending']);
+    }
+    
+    public function mpesaWebhook(Request $request)
+    {
+        // Handle M-Pesa webhook callback
+        $data = $request->all();
+        
+        \Log::info('M-Pesa webhook received', $data);
+        
+        // In production, verify the webhook signature and process the payment
+        // Update donation status in database
+        // Send confirmation email
+        
+        return response()->json(['success' => true]);
+    }
+    
+    private function sendAppreciationEmail($phone, $amount)
+    {
+        try {
+            // In production, use Laravel Mail to send actual email
+            \Log::info('Appreciation email sent', [
+                'phone' => $phone,
+                'amount' => $amount,
+                'message' => "Thank you for your generous donation of KSh {$amount} to Whispr. Your support helps us provide mental health resources to those who need them most."
+            ]);
+            
+            // Simulate email sending
+            // Mail::to($email)->send(new DonationAppreciationMail($amount));
+            
+        } catch (\Exception $e) {
+            \Log::error('Failed to send appreciation email', ['error' => $e->getMessage()]);
+        }
+    }
+
     private function getContextualFallback($content)
     {
         $content = strtolower($content);

@@ -2,15 +2,15 @@
 @import 'bootstrap';
 
 :root {
-  --whisper-blue: #7dd3fc;
-  --whisper-soft-blue: #bae6fd;
-  --whisper-light-blue: #e0f2fe;
-  --whisper-calm-blue: #0ea5e9;
-  --whisper-safe-blue: #0284c7;
-  --whisper-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
-  --whisper-gradient-blue: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%);
-  --whisper-gradient-calm: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-  --whisper-gradient-safe: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  --whispr-blue: #7dd3fc;
+  --whispr-soft-blue: #bae6fd;
+  --whispr-light-blue: #e0f2fe;
+  --whispr-calm-blue: #0ea5e9;
+  --whispr-safe-blue: #0284c7;
+  --whispr-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
+  --whispr-gradient-blue: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%);
+  --whispr-gradient-calm: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  --whispr-gradient-safe: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
 }
 
 body {
@@ -19,7 +19,7 @@ body {
   min-height: 100vh;
 }
 
-.whisper-card {
+.whispr-card {
   background: rgba(240, 249, 255, 0.8);
   backdrop-filter: blur(12px);
   border-radius: 1.5rem !important;
@@ -27,80 +27,38 @@ body {
   border: 1px solid rgba(186, 230, 253, 0.3) !important;
 }
 
-.whisper-btn {
+.whispr-btn {
   border-radius: 50px !important;
   font-weight: 500;
   padding: 0.75rem 1.5rem;
   transition: all 0.2s ease;
 }
 
-.whisper-btn:focus {
+.whispr-btn:focus {
   box-shadow: 0 0 0 0.2rem rgba(178, 203, 242, 0.25) !important;
 }
 
-.btn-whisper-blue {
-  background: var(--whisper-gradient-blue) !important;
+.btn-whispr-blue {
+  background: var(--whispr-gradient-blue) !important;
   border: none !important;
   color: white !important;
   font-weight: 500 !important;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.btn-whisper-blue:hover {
+.btn-whispr-blue:hover {
   opacity: 0.9;
   color: white !important;
   transform: translateY(-1px);
   box-shadow: 0 8px 24px rgba(125, 211, 252, 0.3);
 }
 
-.btn-whisper-blue:focus,
-.btn-whisper-blue:active {
+.btn-whispr-blue:focus,
+.btn-whispr-blue:active {
   color: white !important;
-  background: var(--whisper-gradient-blue) !important;
+  background: var(--whispr-gradient-blue) !important;
   border: none !important;
   box-shadow: 0 0 0 0.2rem rgba(125, 211, 252, 0.25) !important;
-}
-
-.btn-whisper-warm {
-  background: var(--whisper-gradient-warm);
-  border: none;
-  color: white;
-}
-
-.btn-whisper-warm:hover {
-  opacity: 0.9;
-  color: white;
-}
-
-.btn-whisper-calm {
-  background: var(--whisper-gradient-calm);
-  border: none;
-  color: white;
-}
-
-.btn-whisper-calm:hover {
-  opacity: 0.9;
-  color: white;
-}
-
-.bg-whisper-blue {
-  background-color: var(--whisper-blue) !important;
-}
-
-.bg-whisper-warm {
-  background-color: var(--whisper-warm) !important;
-}
-
-.bg-whisper-purple {
-  background-color: var(--whisper-purple) !important;
-}
-
-.bg-whisper-teal {
-  background-color: var(--whisper-teal) !important;
-}
-
-.text-whisper-blue {
-  color: var(--whisper-blue) !important;
 }
 
 .mood-btn {
@@ -115,7 +73,7 @@ body {
 
 .mood-btn.active {
   background-color: rgba(125, 211, 252, 0.2) !important;
-  border-color: var(--whisper-blue) !important;
+  border-color: var(--whispr-blue) !important;
   transform: scale(1.02);
   box-shadow: 0 4px 16px rgba(125, 211, 252, 0.2);
 }
@@ -132,7 +90,7 @@ body {
 }
 
 .nav-item.active {
-  color: var(--whisper-calm-blue);
+  color: var(--whispr-calm-blue);
 }
 
 .crisis-btn {
@@ -155,7 +113,7 @@ body {
 }
 
 .form-control:focus {
-  border-color: var(--whisper-blue);
+  border-color: var(--whispr-blue);
   box-shadow: 0 0 0 0.2rem rgba(125, 211, 252, 0.15);
 }
 
@@ -163,7 +121,7 @@ body {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: var(--whisper-gradient-calm);
+  background: var(--whispr-gradient-calm);
   transition: transform 1s ease-in-out;
 }
 
@@ -177,11 +135,11 @@ body {
 
 .progress-dot.active {
   width: 32px;
-  background: var(--whisper-blue);
+  background: var(--whispr-blue);
 }
 
 @media (max-width: 768px) {
-  .container-whisper {
+  .container-whispr {
     max-width: 100%;
     padding: 0 1rem;
   }
